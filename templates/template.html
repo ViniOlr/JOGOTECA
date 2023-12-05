@@ -8,6 +8,7 @@
     <!-- A função url_for serve para que a url do arquivo seja encontrada de acordo com o nome dele e a pasta em que ele está, independentemente da hierarquia dele,
     o primeiro parâmetro é a pasta e o "filename" é o nome do arquivo. São as URLs dinâmicas. -->
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css')}}">
 </head>
 
 <body>
@@ -28,11 +29,16 @@
             <div>
                 <a href="{{ url_for('logout') }}">Logout</a>
                 <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('index') }}">Paginal Inicial</a>
+                <a href="{{ url_for('novo') }}">Novo Jogo</a>
             </div>
         </div>
 
         <!-- Aqui eu estou declarando um bloco de contéudo dinamico. No caso a variável conteudo -->
         {% block conteudo %} {% endblock %}
+
+        <script type="text/javascript" src="{{ url_for('static', filename='jquery.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='app.js') }}"></script>
 
     </div>
 </body>
