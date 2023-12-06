@@ -1,8 +1,8 @@
 # Arquivo onde iremos tratar das rotas da nossa aplicação
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 from jogoteca import app, db
-from models import Jogos, Usuarios
-from helpers import recupera_imagem, deleta_arquivo, FormularioJogo, FormularioUsuario
+from models import Jogos
+from helpers import recupera_imagem, deleta_arquivo, FormularioJogo
 import time
 
 # render_template = Renderizar uma página html, possibilitando passagem de parâmetros
@@ -79,7 +79,7 @@ def editar(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         # Fazendo o redirecionamento para a função que instancia a rota (página)
         # E Informando através de query string (?), qual é a página que eu estou tentando acessar, porém com a url for precisamos passar através de variáveis
-        return redirect(url_for('login', proxima=url_for('editar')))
+        return redirect(url_for('login', proxima=url_for('editar', id=id)))
     
     # Recuperando informações do jogo pelo id passado pela url
     jogo = Jogos.query.filter_by(id=id).first()
@@ -141,66 +141,6 @@ def deletar(id):
 
     return redirect(url_for('index'))
 
-# Criando uma rota nova, que irá retornar um arquivo html com um formulário de login
-@app.route('/login')
-def login():
-    # Recupernado o valor que foi passado pela query string, antes definida na rota "novo"
-    proxima = request.args.get('proxima')
-    if proxima == None:
-        proxima = '/'
-
-    form = FormularioUsuario
-
-    return render_template('login.html', titulo='Faça seu login', proxima=proxima, form=form)
-
-# Criando uma rota responsável por receber a requisição do formulário de login
-# Foi deifinido o methods com um array contendo o valor 'POST' para possibilitar que esta rota realiza requisições post
-@app.route('/autenticar', methods=['POST', ])
-def autenticar():
-
-    form = FormularioUsuario(request.form)
-
-    # Recuperando informações de um usuario
-    usuario = Usuarios.query.filter_by(nickname=form.nickname.data).first()
-
-    # Verificando se o usuario que veio do formulario de login está dentro do dicionário ceiado
-    if usuario:
-        # Verificando se a senha é daquele usuário
-        if form.senha.data == usuario.senha:
-            # Armazenando o usuário na session com a chave usuario_logado
-            session['usuario_logado'] = usuario.nickname
-
-            # Exibindo uma mensagem para o usuário usando o valor armazenado na sessão
-            flash(f"Usuário {usuario.nickname} logado com sucesso")
-
-            # Recuperando a informação do input hidden do formulario para saber a próxima página
-            proxima_pagina = request.form['proxima']
-
-            return redirect(proxima_pagina)
-        else:
-            # Exibindo uma mensagem de erro de login
-            flash(f"Usuário ou senha incorretos")
-
-            # Fazendo o redirecionamento para a função que instancia a rota (página)
-            return redirect(url_for('login'))
-    else:
-        # Exibindo uma mensagem de erro de login
-        flash(f"O Usuário não existe")
-
-        # Fazendo o redirecionamento para a função que instancia a rota (página)
-        return redirect(url_for('login'))
-
-# Criando uma nova rota para realizar loggout
-@app.route('/logout')
-def logout():
-
-    # Atribuindo None para a session criada para o usuario logado
-    session['usuario_logado'] = None
-    # Exibindo uma mensagem de sucesso
-    flash("Loggout efetuado com sucesso!")
-
-    # Fazendo o redirecionamento para a função que instancia a rota (página)
-    return redirect(url_for('index'))
 
 @app.route('/uploads/<nome_arquivo>')
 def imagem(nome_arquivo):

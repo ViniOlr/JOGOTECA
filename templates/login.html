@@ -3,7 +3,7 @@
 
 <!-- No atributo action, estou utilizando a url_for para fazer referencia a função que refere-se a rota -->
 <form method="POST" action="{{ url_for('autenticar') }}">
-    {{ form.csrf_token() }}
+    {{form.csrf_token()}}
     <!-- Recuperando informação passada do arquivo python, e colocando em um valor de um input hidden -->
     <input type="hidden" name="proxima" value="{{ proxima }}" />
     <div class="form-group">
